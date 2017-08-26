@@ -19,7 +19,7 @@ namespace LiveSplit.PetThePup {
 
     private readonly TimerModel _timer;
     private readonly LiveSplitState _state;
-    private readonly DoggoMemory _memory;
+    private readonly GameMemoryImpl _memory;
     private readonly DoggoRegistry _registry;
 
     public PetThePupComponent(LiveSplitState state) {
@@ -29,11 +29,11 @@ namespace LiveSplit.PetThePup {
       this._timer = new TimerModel {CurrentState = state};
       this._timer.OnStart += this.OnTimerStart;
 
-      this._memory = new DoggoMemory(this.Settings);
+      this._memory = new GameMemoryImpl();
       this._memory.OnGameStart += this.OnGameStart;
       this._memory.OnGameReset += this.OnGameReset;
-      this._memory.OnGameCrash += this.OnGameCrash;
-      this._memory.OnPet += this.OnPet;
+      this._memory.OnProcessDied += this.OnGameCrash;
+      this._memory.OnGameAdvance += this.OnPet;
       
       this._registry = new DoggoRegistry();
 

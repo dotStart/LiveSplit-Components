@@ -47,9 +47,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DoggoMemory.cs" />
     <Compile Include="Doggo.cs" />
     <Compile Include="DoggoRegistry.cs" />
+    <Compile Include="GameMemoryImpl.cs" />
     <Compile Include="PetThePupComponent.cs" />
     <Compile Include="PetThePupFactory.cs" />
     <Compile Include="PetThePupSettings.cs">
@@ -65,6 +65,12 @@
     <EmbeddedResource Include="PetThePupSettings.resx">
       <DependentUpon>PetThePupSettings.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{bd3ff381-5ec2-471c-8a09-7cd40dd68eaa}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
