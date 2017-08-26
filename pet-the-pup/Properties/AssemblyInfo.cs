@@ -38,4 +38,4 @@ using LiveSplit.UI.Components;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 // LiveSplit
-[assembly: ComponentFactory(typeof(PetThePupFactory))]
+[assembly: ComponentFactory(typeof(AutosplitterFactory))]

@@ -10,7 +10,7 @@ using System.Windows.Forms;
 using System.Xml;
 
 namespace LiveSplit.PetThePup {
-  public partial class PetThePupSettings : UserControl {
+  public partial class AutosplitterSettings : UserControl {
     public bool AllowTimerStart { get; set; }
     public bool AllowTimerReset { get; set; }
 
@@ -46,7 +46,7 @@ namespace LiveSplit.PetThePup {
     private bool _allowRegistryAccessValue;
     private SplitMode _splitModeValue;
     
-    public PetThePupSettings() {
+    public AutosplitterSettings() {
       this.InitializeComponent();
 
       this._allowTimerStart.DataBindings.Add("Checked", this, "AllowTimerStart", false,

@@ -1,6 +1,6 @@
 ﻿namespace LiveSplit.PetThePup
 {
-    partial class PetThePupSettings
+    partial class AutosplitterSettings
     {
         /// <summary> 
         /// Required designer variable.

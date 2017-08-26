@@ -50,20 +50,20 @@
     <Compile Include="Puppy.cs" />
     <Compile Include="PuppyGallery.cs" />
     <Compile Include="GameMemoryImpl.cs" />
-    <Compile Include="PetThePupComponent.cs" />
-    <Compile Include="PetThePupFactory.cs" />
-    <Compile Include="PetThePupSettings.cs">
+    <Compile Include="AutosplitterComponent.cs" />
+    <Compile Include="AutosplitterFactory.cs" />
+    <Compile Include="AutosplitterSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="PetThePupSettings.Designer.cs">
-      <DependentUpon>PetThePupSettings.cs</DependentUpon>
+    <Compile Include="AutosplitterSettings.Designer.cs">
+      <DependentUpon>AutosplitterSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SplitMode.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="PetThePupSettings.resx">
-      <DependentUpon>PetThePupSettings.cs</DependentUpon>
+    <EmbeddedResource Include="AutosplitterSettings.resx">
+      <DependentUpon>AutosplitterSettings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

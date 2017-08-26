@@ -11,10 +11,10 @@ namespace LiveSplit.PetThePup {
   /// <summary>
   /// Manages the complex splitting logic required for 
   /// </summary>
-  public class PetThePupComponent : LogicComponent {
+  public class AutosplitterComponent : LogicComponent {
     public override string ComponentName => "Pet the Pup";
     public bool LayoutComponent { get; }
-    public PetThePupSettings Settings { get; }
+    public AutosplitterSettings Settings { get; }
     public bool Disposed { get; private set; }
 
     private readonly TimerModel _timer;
@@ -22,9 +22,9 @@ namespace LiveSplit.PetThePup {
     private readonly GameMemoryImpl _memory;
     private readonly PuppyGallery _registry;
 
-    public PetThePupComponent(LiveSplitState state) {
+    public AutosplitterComponent(LiveSplitState state) {
       this._state = state;
-      this.Settings = new PetThePupSettings();
+      this.Settings = new AutosplitterSettings();
 
       this._timer = new TimerModel {CurrentState = state};
       this._timer.OnStart += this.OnTimerStart;

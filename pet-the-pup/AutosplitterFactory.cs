@@ -8,7 +8,7 @@ namespace LiveSplit.PetThePup {
   /// <summary>
   /// Constructs the pet the pup autosplitter component.
   /// </summary>
-  public class PetThePupFactory : IComponentFactory {
+  public class AutosplitterFactory : IComponentFactory {
     public string ComponentName => "Pet the Pup Autosplitter";
     public string Description =>
       "Automatically starts, resets or splits based on the Pet the Pup game state.";
@@ -19,7 +19,7 @@ namespace LiveSplit.PetThePup {
     public Version Version => Assembly.GetExecutingAssembly().GetName().Version;
     public string XMLURL => "update.xml";
 
-    private PetThePupComponent _instance;
+    private AutosplitterComponent _instance;
     
     /// <inheritdoc />
     public IComponent Create(LiveSplitState state) {
@@ -35,7 +35,7 @@ namespace LiveSplit.PetThePup {
         throw new Exception("Component is already loaded");
       }
 
-      return this._instance = new PetThePupComponent(state);
+      return this._instance = new AutosplitterComponent(state);
     }
   }
 }
