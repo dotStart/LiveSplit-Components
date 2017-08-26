@@ -47,8 +47,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Doggo.cs" />
-    <Compile Include="DoggoRegistry.cs" />
+    <Compile Include="Puppy.cs" />
+    <Compile Include="PuppyGallery.cs" />
     <Compile Include="GameMemoryImpl.cs" />
     <Compile Include="PetThePupComponent.cs" />
     <Compile Include="PetThePupFactory.cs" />

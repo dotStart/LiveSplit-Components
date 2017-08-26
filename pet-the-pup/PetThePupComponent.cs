@@ -20,7 +20,7 @@ namespace LiveSplit.PetThePup {
     private readonly TimerModel _timer;
     private readonly LiveSplitState _state;
     private readonly GameMemoryImpl _memory;
-    private readonly DoggoRegistry _registry;
+    private readonly PuppyGallery _registry;
 
     public PetThePupComponent(LiveSplitState state) {
       this._state = state;
@@ -33,9 +33,11 @@ namespace LiveSplit.PetThePup {
       this._memory.OnGameStart += this.OnGameStart;
       this._memory.OnGameReset += this.OnGameReset;
       this._memory.OnProcessDied += this.OnGameCrash;
-      this._memory.OnGameAdvance += this.OnPet;
+      this._memory.OnGameAdvance += this.OnAdvance;
       
-      this._registry = new DoggoRegistry();
+      this._registry = new PuppyGallery();
+      this._registry.OnPuppyDiscovered += this.OnDiscoverPup;
+      this._registry.OnAllPuppiesDiscovered += this.OnDiscoverAllPups;
 
       this._memory.Start();
     }
@@ -57,10 +59,10 @@ namespace LiveSplit.PetThePup {
     /// <param name="sender">a sender</param>
     /// <param name="e">a set of event arguments</param>
     private void OnGameStart(object sender, EventArgs e) {
-      Debug.WriteLine("Game is Starting");
+      Debug.WriteLine("[Pet the Pup] Game is Starting");
       
       if (this.Settings.AllowRegistryAccess) {
-        Debug.WriteLine("Deleting registry keys");
+        Debug.WriteLine("[Pet the Pup] Deleting registry keys");
         this._registry.DeleteKeys();
       }
       
@@ -79,7 +81,7 @@ namespace LiveSplit.PetThePup {
     /// <param name="sender">a sender</param>
     /// <param name="e">a set of event arguments</param>
     private void OnGameReset(object sender, EventArgs e) {
-      Debug.WriteLine("Game has been Reset");
+      Debug.WriteLine("[Pet the Pup] Game has been Reset");
       
       if (this.Settings.AllowTimerReset) {
         this._timer.Reset();
@@ -92,7 +94,7 @@ namespace LiveSplit.PetThePup {
     /// <param name="sender">a sender</param>
     /// <param name="e">a set of event arguments</param>
     private void OnGameCrash(object sender, EventArgs e) {
-      Debug.Write("Game process has died");
+      Debug.Write("[Pet the Pup] Game process has died");
       this._timer.Pause();
     }
 
@@ -102,32 +104,46 @@ namespace LiveSplit.PetThePup {
     /// <param name="sender">a sender</param>
     /// <param name="e">a set of event arguments</param>
     /// <exception cref="ArgumentOutOfRangeException">when the current split mode is not (yet) supported</exception>
-    private void OnPet(object sender, EventArgs e) {
-      Debug.Write("Pet!");
-      uint doggoCount = this._registry.CapturedAmount;
-
+    private void OnAdvance(object sender, EventArgs e) {
       if (this.Settings.AllowRegistryAccess) {
         this._registry.Update();
       }
       
-      switch (this.Settings.Mode) {
-        case SplitMode.Never: break;
-        case SplitMode.Every:
-          this._timer.Split();
-          break;
-        case SplitMode.EveryUnique:
-          if (doggoCount != this._registry.CapturedAmount) {
-            this._timer.Split();
-          }
-          break;
-        case SplitMode.AllUnique:
-          if (this._registry.CapturedAll) {
-            this._timer.Split();
-          }
-          break;
-        default:
-          throw new ArgumentOutOfRangeException();
+      if (this.Settings.Mode != SplitMode.Every) {
+        return;
       }
+      
+      this._timer.Split();
+    }
+
+    /// <summary>
+    /// Handles every newly discovered pup within the session.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="pup"></param>
+    private void OnDiscoverPup(object sender, Puppy pup) {
+      Debug.WriteLine("[Pet the Pup] Discovered pup " + pup);
+
+      if (this.Settings.Mode != SplitMode.EveryUnique) {
+        return;
+      }
+      
+      this._timer.Split();
+    }
+
+    /// <summary>
+    /// Handles the case of a player who discovered all pups.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnDiscoverAllPups(object sender, EventArgs e) {
+      Debug.WriteLine("[Pet the Pup] Discovered all pups in the gallery");
+
+      if (this.Settings.Mode != SplitMode.AllUnique) {
+        return;
+      }
+      
+      this._timer.Split();
     }
 
     /// <inheritdoc />

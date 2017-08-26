@@ -1,5 +1,8 @@
 ﻿namespace LiveSplit.PetThePup {
-  public enum Doggo {
+  /// <summary>
+  /// Provides a list of known puppies based on their actual nicknames.
+  /// </summary>
+  public enum Puppy {
     Bo,
     Buddy,
     Cadbury,
