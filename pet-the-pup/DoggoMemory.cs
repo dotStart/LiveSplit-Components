@@ -15,26 +15,33 @@ namespace LiveSplit.PetThePup {
     public event EventHandler OnGameCrash;
     public event EventHandler OnPet;
 
+    public bool GameRunning { get; private set; }
+    public uint PuppyCount { get; private set; }
+    public uint PeopleCount { get; private set; }
+
     private readonly PetThePupSettings _settings;
 
     private readonly DeepPointer _levelPointer = new DeepPointer(0x10A5500);
-
     private readonly DeepPointer _puppyCounterPointer =
       new DeepPointer("mono.dll", 0x001F8CC0, 0xF0, 0x44, 0x58C);
+    private readonly DeepPointer _peopleCounterPointer =
+      new DeepPointer("PetThePup.exe", 0x01021290, 0x4E4, 0x3A8, 0x0, 0x364);
 
     private Task _thread;
 
     // private List<int> _ignoredProcesses;
     private CancellationTokenSource _cancellationTokenSource;
 
-    private bool _gameRunning;
     private uint _previousLevel;
-    private uint _previousPuppyCount;
 
     public DoggoMemory(PetThePupSettings settings) {
       this._settings = settings;
     }
 
+    /// <summary>
+    /// Starts a thread which re-evaluates the game state on a regular basis.
+    /// </summary>
+    /// <exception cref="InvalidOperationException">when the thread is already alive</exception>
     public void Start() {
       // make sure we are only dealing with a single inspection thread
       if (this._thread != null && this._thread.Status == TaskStatus.Running) {
@@ -63,10 +70,14 @@ namespace LiveSplit.PetThePup {
       return process;
     }
 
+    /// <summary>
+    /// Resets the cached game state.
+    /// </summary>
     private void ResetState() {
-      this._gameRunning = false;
+      this.GameRunning = false;
       this._previousLevel = 0;
-      this._previousPuppyCount = 0;
+      this.PuppyCount = 0;
+      this.PeopleCount = 0;
     }
 
     /// <summary>
@@ -102,16 +113,17 @@ namespace LiveSplit.PetThePup {
           // but no reset)
           uint level = this._levelPointer.Deref(game, (uint) 0);
           uint puppyCount = this._puppyCounterPointer.Deref(game, (uint) 0);
+          this.PeopleCount = this._peopleCounterPointer.Deref(game, (uint) 0);
 
-          if (!this._gameRunning) {
+          if (!this.GameRunning) {
             // check whether the game has actually been started
             if (this.OnGameStart == null || level == 0 || level == 101 || puppyCount != 0) continue;
 
-            this._gameRunning = true;
+            this.GameRunning = true;
             this.OnGameStart(this, EventArgs.Empty);
           } else {
             // verify whether the game has been reset
-            if (level == 0 || level == 101 || this._previousPuppyCount > puppyCount) {
+            if (level == 0 || level == 101 || this.PuppyCount > puppyCount) {
               this.ResetState();
               this.OnGameReset?.Invoke(this, EventArgs.Empty);
 
@@ -119,13 +131,13 @@ namespace LiveSplit.PetThePup {
             }
 
             // verify whether we have just petted a pup
-            if (this._previousPuppyCount < puppyCount && puppyCount != 0) {
+            if (this.PuppyCount < puppyCount && puppyCount != 0) {
               this.OnPet?.Invoke(this, EventArgs.Empty);
             }
 
             // store the previous values
             this._previousLevel = level;
-            this._previousPuppyCount = puppyCount;
+            this.PuppyCount = puppyCount;
           }
         } catch (Exception ex) {
           // in case we catch any errors along the way we'll simply log them and move on
