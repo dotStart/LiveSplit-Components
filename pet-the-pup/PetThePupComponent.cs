@@ -132,6 +132,8 @@ namespace LiveSplit.PetThePup {
 
     /// <inheritdoc />
     public override void Dispose() {
+      this._memory?.Stop();
+
       this.Disposed = true;
     }
 

@@ -54,6 +54,20 @@ namespace LiveSplit.PetThePup {
     }
 
     /// <summary>
+    /// Stops the thread which evaluates the game state.
+    /// </summary>
+    public void Stop() {
+      // make sure we are actually dealing with an active memory source
+      if (this._cancellationTokenSource == null || this._thread == null ||
+          this._thread.Status != TaskStatus.Running) {
+        return;
+      }
+      
+      this._cancellationTokenSource.Cancel();
+      this._thread.Wait();
+    }
+
+    /// <summary>
     /// Locates the game process.
     /// </summary>
     /// <returns>a game process or null</returns>
