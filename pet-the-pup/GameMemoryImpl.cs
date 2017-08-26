@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using LiveSplit.ComponentUtil;
 using LiveSplit.dotStart.Common.Splitter;
 
-namespace LiveSplit.PetThePup {
+namespace LiveSplit.dotStart.PetThePup {
   /// <summary>
   /// Provides access to game state data and events for the Pet the Pup at the Party game.
   /// </summary>

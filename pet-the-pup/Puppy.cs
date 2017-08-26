@@ -1,4 +1,4 @@
-﻿namespace LiveSplit.PetThePup {
+﻿namespace LiveSplit.dotStart.PetThePup {
   /// <summary>
   /// Provides a list of known puppies based on their actual nicknames.
   /// </summary>

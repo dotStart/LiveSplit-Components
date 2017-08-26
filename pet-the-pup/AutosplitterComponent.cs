@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
 using LiveSplit.Model;
 using LiveSplit.UI;
 using LiveSplit.UI.Components;
 
-namespace LiveSplit.PetThePup {
+namespace LiveSplit.dotStart.PetThePup {
   /// <summary>
   /// Manages the complex splitting logic required for 
   /// </summary>

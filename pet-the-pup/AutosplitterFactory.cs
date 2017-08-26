@@ -4,7 +4,7 @@ using System.Windows.Forms;
 using LiveSplit.Model;
 using LiveSplit.UI.Components;
 
-namespace LiveSplit.PetThePup {
+namespace LiveSplit.dotStart.PetThePup {
   /// <summary>
   /// Constructs the pet the pup autosplitter component.
   /// </summary>

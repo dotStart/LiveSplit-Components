@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using Microsoft.Win32;
 
-namespace LiveSplit.PetThePup {
+namespace LiveSplit.dotStart.PetThePup {
   /// <summary>
   /// Allows the component to gain access to the puppy library in order to identify the amount of
   /// unique pups petted per run.
