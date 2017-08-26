@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ namespace LiveSplit.dotStart.Common.Splitter {
     /// <summary>
     /// Defines a list of known process names which this implementation will scan for.
     /// </summary>
-    protected abstract string[] ProcessNames { get; }
+    protected abstract ReadOnlyCollection<string> ProcessNames { get; }
     
     /// <summary>
     /// Stores the parent thread to which our events will be posted.
