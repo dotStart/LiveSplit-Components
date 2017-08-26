@@ -9,6 +9,7 @@ Table of Contents
 * [License](#license)
 * [Downloads](#downloads)
 * [Issues](#issues)
+* [Building](#building)
 * [Contributing](#contributing)
 
 About
