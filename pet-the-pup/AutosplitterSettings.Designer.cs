@@ -117,6 +117,7 @@
             this._splitModeNever.TabStop = true;
             this._splitModeNever.Text = "None";
             this._splitModeNever.UseVisualStyleBackColor = true;
+            this._splitModeNever.CheckedChanged += this.OnSplitModeChanged;
             // 
             // _splitModeEvery
             // 
@@ -128,6 +129,7 @@
             this._splitModeEvery.TabStop = true;
             this._splitModeEvery.Text = "Every";
             this._splitModeEvery.UseVisualStyleBackColor = true;
+            this._splitModeEvery.CheckedChanged += this.OnSplitModeChanged;
             // 
             // _splitModeEveryUnique
             // 
@@ -139,6 +141,7 @@
             this._splitModeEveryUnique.TabStop = true;
             this._splitModeEveryUnique.Text = "Every Unique";
             this._splitModeEveryUnique.UseVisualStyleBackColor = true;
+            this._splitModeEveryUnique.CheckedChanged += this.OnSplitModeChanged;
             // 
             // _splitModeAll
             // 
@@ -150,6 +153,7 @@
             this._splitModeAll.TabStop = true;
             this._splitModeAll.Text = "All Unique";
             this._splitModeAll.UseVisualStyleBackColor = true;
+            this._splitModeAll.CheckedChanged += this.OnSplitModeChanged;
             // 
             // _allowRegistryAccess
             // 

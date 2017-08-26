@@ -1,12 +1,26 @@
 ﻿using System;
 using System.Windows.Forms;
 using System.Xml;
+using LiveSplit.dotStart.Common;
 
 namespace LiveSplit.dotStart.PetThePup {
-  public partial class AutosplitterSettings : UserControl {
+  public partial class AutosplitterSettings : ComponentSettings {
+    
+    /// <summary>
+    /// Defines whether the component is allowed to start the timer when a new game is started.
+    /// </summary>
     public bool AllowTimerStart { get; set; }
+    
+    /// <summary>
+    /// Defines whether the component is allowed to reset the timer when the player leaves the
+    /// actual game and returns to the main menu.
+    /// </summary>
     public bool AllowTimerReset { get; set; }
 
+    /// <summary>
+    /// Defines whether the component is allowed to change the game registry in order to detect
+    /// which unique pups have been found.
+    /// </summary>
     public bool AllowRegistryAccess {
       get => this._allowRegistryAccessValue;
       set {
@@ -15,29 +29,18 @@ namespace LiveSplit.dotStart.PetThePup {
       }
     }
 
-    public SplitMode Mode {
-      get {
-        if (this.AllowRegistryAccess) {
-          return this._splitModeValue;
-        }
-
-        if (this._splitModeValue == SplitMode.EveryUnique ||
-            this._splitModeValue == SplitMode.AllUnique) {
-          return DefaultMode;
-        }
-
-        return DefaultMode;
-      }
-      set => this._splitModeValue = value;
-    }
+    /// <summary>
+    /// Defines which type of logic to run in order to decide when to advance to a new split.
+    /// </summary>
+    public SplitMode Mode { get; set; }
 
     private const bool DefaultAllowTimerStart = true;
     private const bool DefaultAllowTimerReset = true;
     private const bool DefaultAllowRegistryAccess = false;
     private const SplitMode DefaultMode = SplitMode.Every;
 
+    private bool _updating;
     private bool _allowRegistryAccessValue;
-    private SplitMode _splitModeValue;
     
     public AutosplitterSettings() {
       this.InitializeComponent();
@@ -51,46 +54,29 @@ namespace LiveSplit.dotStart.PetThePup {
 
       this.AllowTimerStart = DefaultAllowTimerStart;
       this.AllowTimerReset = DefaultAllowTimerReset;
-      this.AllowRegistryAccess = DefaultAllowRegistryAccess;
-      this._splitModeValue = DefaultMode;
+      this._allowRegistryAccessValue = DefaultAllowRegistryAccess;
+      this.Mode = DefaultMode;
       
-      this._splitModeNever.CheckedChanged += this.OnSplitModeChanged;
-      this._splitModeEvery.CheckedChanged += this.OnSplitModeChanged;
-      this._splitModeEveryUnique.CheckedChanged += this.OnSplitModeChanged;
-      this._splitModeAll.CheckedChanged += this.OnSplitModeChanged;
+      this.UpdateSplitMode();
     }
 
-    /// <summary>
-    /// Converts the current state of this object into a single XML node.
-    /// </summary>
-    /// <param name="document">the document in which the new node resides</param>
-    /// <returns>an XML node</returns>
-    public XmlNode GetSettings(XmlDocument document) {
-      XmlElement root = document.CreateElement("Settings");
-
+    /// <inheritdoc />
+    protected override void GetSettings(XmlDocument document, XmlElement root) {
       root.AppendChild(WriteElement(document, "AllowTimerStart", this.AllowTimerStart));
       root.AppendChild(WriteElement(document, "AllowTimerReset", this.AllowTimerReset));
       root.AppendChild(WriteElement(document, "AllowRegistryAccess", this.AllowRegistryAccess));
       root.AppendChild(WriteElement(document, "Mode", this.Mode));
-
-      return root;
     }
 
-    /// <summary>
-    /// Copies the values represented by a passed XML node into the local object state.
-    /// </summary>
-    /// <param name="settings">an XML node</param>
-    public void SetSettings(XmlNode settings) {
+    /// <inheritdoc />
+    public override void SetSettings(XmlNode settings) {
       this.AllowTimerStart = ReadElement(settings, "AllowTimerStart", DefaultAllowTimerStart);
       this.AllowTimerReset = ReadElement(settings, "AllowTimerReset", DefaultAllowTimerReset);
-      this.AllowRegistryAccess =
+      this._allowRegistryAccessValue =
         ReadElement(settings, "AllowRegistryAccess", DefaultAllowRegistryAccess);
       this.Mode = ReadElement(settings, "Mode", DefaultMode);
       
-      this._splitModeNever.Checked = this.Mode == SplitMode.Never;
-      this._splitModeEvery.Checked = this.Mode == SplitMode.Every;
-      this._splitModeEveryUnique.Checked = this.Mode == SplitMode.EveryUnique;
-      this._splitModeAll.Checked = this.Mode == SplitMode.AllUnique;
+      this.UpdateSplitMode();
     }
 
     /// <summary>
@@ -99,6 +85,13 @@ namespace LiveSplit.dotStart.PetThePup {
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void OnSplitModeChanged(object sender, EventArgs e) {
+      // due to the fact that every change of the .Checked field actively causes the application to
+      // re-evaluate the current mode, we'll have to postpone this update whenever the call
+      // originates within the UpdateSplitMode method
+      if (this._updating) {
+        return;
+      }
+      
       if (this._splitModeEvery.Checked) {
         this.Mode = SplitMode.Every;
       } else if (this._splitModeEveryUnique.Checked) {
@@ -108,70 +101,27 @@ namespace LiveSplit.dotStart.PetThePup {
       } else {
         this.Mode = SplitMode.Never;
       }
-
-      this.UpdateSplitMode();
     }
 
     /// <summary>
     /// Updates the state of the split mode radio boxes.
     /// </summary>
     private void UpdateSplitMode() {
+      if (!this._allowRegistryAccessValue && (this.Mode == SplitMode.EveryUnique || this.Mode == SplitMode.AllUnique)) {
+        this.Mode = DefaultMode;
+      }
+      
       this._splitModeEveryUnique.Enabled = this._splitModeAll.Enabled = this._allowRegistryAccessValue;
-    }
 
-    /// <summary>
-    /// Reads a boolean value from the specified node within the passed element.
-    /// </summary>
-    /// <param name="root">a root or origin node</param>
-    /// <param name="name">an element name</param>
-    /// <param name="defaultValue">a default value</param>
-    /// <returns>the node value</returns>
-    private static bool ReadElement(XmlNode root, string name, bool defaultValue) {
-      bool value = defaultValue;
-
-      if (root[name] != null) {
-        bool.TryParse(root[name].InnerText, out value);
+      this._updating = true;
+      {
+        this._splitModeNever.Checked = this.Mode == SplitMode.Never;
+        this._splitModeEvery.Checked = this.Mode == SplitMode.Every;
+        this._splitModeEveryUnique.Checked = this.Mode == SplitMode.EveryUnique;
+        this._splitModeAll.Checked = this.Mode == SplitMode.AllUnique;
       }
-
-      return value;
-    }
-
-    /// <summary>
-    /// Reads an enum value from the specified node within the passed element.
-    /// </summary>
-    /// <param name="root">a root or origin node</param>
-    /// <param name="name">an element name</param>
-    /// <param name="defaultValue">a default value</param>
-    /// <typeparam name="V">an enum type</typeparam>
-    /// <returns>the node value</returns>
-    /// <exception cref="ArgumentException">when the passed type is not an enum</exception>
-    private static V ReadElement<V>(XmlNode root, string name, V defaultValue)
-      where V : struct, IConvertible {
-      if (!typeof(V).IsEnum) {
-        throw new ArgumentException("V must be an numerated type");
-      }
-
-      V value = defaultValue;
-
-      if (root[name] != null) {
-        Enum.TryParse(root[name].InnerText, out value);
-      }
-
-      return value;
-    }
-
-    /// <summary>
-    /// Converts the passed name and value into a standard XML node.
-    /// </summary>
-    /// <param name="document">the document in which the new node resides</param>
-    /// <param name="name">the element name</param>
-    /// <param name="value">the current element value</param>
-    /// <typeparam name="V">a value type</typeparam>
-    /// <returns></returns>
-    private static XmlElement WriteElement<V>(XmlDocument document, string name, V value) {
-      XmlElement element = document.CreateElement(name);
-      element.InnerText = value.ToString();
-      return element;
+      this._updating = false;
+      this.OnSplitModeChanged(null, EventArgs.Empty);
     }
   }
 }
