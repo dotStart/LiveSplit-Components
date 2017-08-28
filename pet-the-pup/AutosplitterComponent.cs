@@ -11,7 +11,7 @@ namespace LiveSplit.dotStart.PetThePup {
   /// Manages the complex splitting logic required for 
   /// </summary>
   public class AutosplitterComponent : LogicComponent {
-    public override string ComponentName => "Pet the Pup";
+    public override string ComponentName => "Pet the Pup Autosplitter";
     public bool LayoutComponent { get; }
     public AutosplitterSettings Settings { get; }
     public bool Disposed { get; private set; }
