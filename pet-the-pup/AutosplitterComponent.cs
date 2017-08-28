@@ -21,12 +21,15 @@ namespace LiveSplit.dotStart.PetThePup {
     private readonly GameMemoryImpl _memory = GameMemoryImpl.Instance;
     private readonly PuppyGallery _registry = PuppyGallery.Instance;
 
+    private bool _timerAlive;
+
     public AutosplitterComponent(LiveSplitState state) {
       this._state = state;
       this.Settings = new AutosplitterSettings();
 
       this._timer = new TimerModel {CurrentState = state};
       this._timer.OnStart += this.OnTimerStart;
+      this._timer.OnPause += this.OnTimerPause;
 
       this._memory.OnGameStart += this.OnGameStart;
       this._memory.OnGameReset += this.OnGameReset;
@@ -45,6 +48,8 @@ namespace LiveSplit.dotStart.PetThePup {
     /// <param name="sender"></param>
     /// <param name="e"></param>
     private void OnTimerStart(object sender, EventArgs e) {
+      this._timerAlive = true;
+      
       // TODO: Right now we do not account for loading screens between the different levels and thus
       // we do not need to initialize game time on our timer model (for now)
       // this._timer.InitializeGameTime();
@@ -53,6 +58,15 @@ namespace LiveSplit.dotStart.PetThePup {
         Debug.WriteLine("[Pet the Pup] Deleting registry keys");
         this._registry.DeleteKeys();
       }
+    }
+
+    /// <summary>
+    /// Handles pausing of the timer.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void OnTimerPause(object sender, EventArgs e) {
+      this._timerAlive = false;
     }
 
     /// <summary>
@@ -88,7 +102,10 @@ namespace LiveSplit.dotStart.PetThePup {
     /// <param name="e">a set of event arguments</param>
     private void OnGameCrash(object sender, EventArgs e) {
       Debug.Write("[Pet the Pup] Game process has died");
-      this._timer.Pause();
+
+      if (this._timerAlive) {
+        this._timer.Pause();
+      }
     }
 
     /// <summary>
@@ -141,6 +158,16 @@ namespace LiveSplit.dotStart.PetThePup {
 
     /// <inheritdoc />
     public override void Dispose() {
+      this._timer.OnStart -= this.OnTimerStart;
+
+      this._memory.OnGameStart -= this.OnGameStart;
+      this._memory.OnGameReset -= this.OnGameReset;
+      this._memory.OnProcessDied -= this.OnGameCrash;
+      this._memory.OnGameAdvance -= this.OnAdvance;
+      
+      this._registry.OnPuppyDiscovered -= this.OnDiscoverPup;
+      this._registry.OnAllPuppiesDiscovered -= this.OnDiscoverAllPups;
+      
       this._memory.Dispose();
       this.Disposed = true;
     }
