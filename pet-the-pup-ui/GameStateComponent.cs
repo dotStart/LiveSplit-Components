@@ -268,6 +268,7 @@ namespace LiveSplit.dotStart.PetThePup.UI {
     
     /// <inheritdoc />
     public void Dispose() {
+      this._memory.Dispose();
     }
 
     /// <inheritdoc />
