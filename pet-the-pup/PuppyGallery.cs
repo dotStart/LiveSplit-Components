@@ -24,15 +24,23 @@ namespace LiveSplit.dotStart.PetThePup {
     /// <summary>
     /// Retrieves or creates a puppy gallery instance as needed.
     /// </summary>
-    public static PuppyGallery Instance { get; private set; }
+    public static PuppyGallery Instance {
+      get {
+        if (_instance == null) {
+          return _instance = new PuppyGallery();
+        }
+
+        return _instance;
+      }
+    }
     
     private const string RegistryKey = @"Software\will herring\Pet The Pup at the Party";
 
+    private static PuppyGallery _instance;
     private readonly List<Puppy> _discoveredPuppies = new List<Puppy>();
     private readonly List<Puppy> _remainingPuppies = new List<Puppy>();
 
     private PuppyGallery() {
-      Instance = this;
     }
     
     /// <summary>
