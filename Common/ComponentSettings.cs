@@ -51,6 +51,23 @@ namespace LiveSplit.dotStart.Common {
     }
 
     /// <summary>
+    /// Reads an unsigned integer value from the specified node within the passed element.
+    /// </summary>
+    /// <param name="root">a root or origin node</param>
+    /// <param name="name">an element name</param>
+    /// <param name="defaultValue">a default value</param>
+    /// <returns>the node value</returns>
+    protected static uint ReadElement(XmlNode root, string name, uint defaultValue) {
+      uint value = defaultValue;
+
+      if (root[name] != null) {
+        uint.TryParse(root[name].InnerText, out value);
+      }
+
+      return value;
+    }
+
+    /// <summary>
     /// Reads an enum value from the specified node within the passed element.
     /// </summary>
     /// <param name="root">a root or origin node</param>
