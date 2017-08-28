@@ -75,7 +75,7 @@ namespace LiveSplit.dotStart.Common.Splitter {
     public void Start() {
       // make sure we are not polling the memory yet
       if (this._thread != null && this._thread.Status == TaskStatus.Running) {
-        throw new InvalidOperationException("Game Memory is already being inspected");
+        return;
       }
       
       // prepare the state and spawn a new thread
@@ -94,7 +94,7 @@ namespace LiveSplit.dotStart.Common.Splitter {
       // make sure we are actually polling the memory
       if (this._cancellationTokenSource == null || this._thread == null ||
           this._thread.Status != TaskStatus.Running) {
-        throw new InvalidOperationException("Game Memory is not being inspected");
+        return;
       }
       
       // request the thread to shut down and wait for it to exit
