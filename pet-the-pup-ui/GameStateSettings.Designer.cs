@@ -136,7 +136,7 @@
             // 
             this._numRemainingPups.Location = new System.Drawing.Point(186, 3);
             this._numRemainingPups.Minimum = new decimal(new int[] {
-            1,
+            0,
             0,
             0,
             0});

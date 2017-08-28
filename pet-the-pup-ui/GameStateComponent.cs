@@ -62,8 +62,6 @@ namespace LiveSplit.dotStart.PetThePup.UI {
             height += Spacing;
           }
 
-          height += this._remainingPupNameLabel.Height;
-
           foreach (SimpleLabel label in this._remainingPupLabels) {
             height += Spacing;
             height += label.Height;
