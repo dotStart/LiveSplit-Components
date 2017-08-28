@@ -356,7 +356,7 @@ namespace LiveSplit.dotStart.PetThePup.UI {
         this._remainingPupValueLabel.Text = knownRemaining.Count.ToString();
 
         for (int i = 0; i < this._remainingPupLabels.Length; ++i) {
-          this._remainingPupLabels[i].Text = i < knownRemaining.Count ? remaining[i].ToString() : "-";
+          this._remainingPupLabels[i].Text = i < knownRemaining.Count ? "- " + remaining[i] : "-";
         }
         
         invalidator.Invalidate(0, 0, width, height);
