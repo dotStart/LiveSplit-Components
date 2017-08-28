@@ -8,9 +8,9 @@ namespace LiveSplit.dotStart.PetThePup {
   /// Provides access to game state data and events for the Pet the Pup at the Party game.
   /// </summary>
   public class GameMemoryImpl : SharableGameMemory {
-    public bool InGame { get; private set; }
-    public uint PuppyCount { get; private set; }
-    public uint PeopleCount { get; private set; }
+    
+    public uint PupCount { get; private set; }
+    public uint ConversationCount { get; private set; }
 
     /// <summary>
     /// Grants access to an instance of this type.
@@ -35,7 +35,7 @@ namespace LiveSplit.dotStart.PetThePup {
     public event EventHandler OnGameStart;
     public event EventHandler OnGameReset;
     public event EventHandler OnGameAdvance;
-
+    
     private static readonly DeepPointer LevelPointer = new DeepPointer(0x10A5500);
     private static readonly DeepPointer PuppyCounterPointer =
       new DeepPointer("mono.dll", 0x001F8CC0, 0xF0, 0x44, 0x58C);
@@ -46,6 +46,17 @@ namespace LiveSplit.dotStart.PetThePup {
     protected override ReadOnlyCollection<string> ProcessNames => Array.AsReadOnly(new[] {
       "PetThePup"
     });
+
+    /// <summary>
+    /// Indicates whether the player has actually entered a game (e.g. has pressed the new game
+    /// button).
+    /// </summary>
+    private bool _inGame;
+
+    /// <summary>
+    /// Stores the amount of pups as indicated in memory within the last iteration.
+    /// </summary>
+    private uint _pupCounter;
 
     /// <summary>
     /// Stores a weak reference to the game memory instance.
@@ -59,9 +70,13 @@ namespace LiveSplit.dotStart.PetThePup {
     protected override void ResetValues() {
       base.ResetValues();
 
-      this.InGame = false;
-      this.PuppyCount = 0;
-      this.PeopleCount = 0;
+      this._inGame = false;
+      this._pupCounter = 0;
+      
+      this.ParentThread.Post(d => {
+        this.PupCount = 0;
+        this.ConversationCount = 0;
+      }, null);
     }
 
     /// <inheritdoc />
@@ -70,7 +85,7 @@ namespace LiveSplit.dotStart.PetThePup {
       uint puppyCounter = PuppyCounterPointer.Deref(this.Process, (uint) 0);
       uint peopleCounter = PeopleCounterPointer.Deref(this.Process, (uint) 0);
 
-      if (!this.InGame) {
+      if (!this._inGame) {
         // if we detect any of the menu level values or if the puppy counter is not set to zero,
         // we'll skip this execution and try again at a later time
         if (level == 0 || level == 101 || puppyCounter != 0) {
@@ -79,22 +94,26 @@ namespace LiveSplit.dotStart.PetThePup {
 
         // otherwise, we'll update the internal state to reflect the new in-game status and notify
         // all watchers of this change
-        this.InGame = true;
+        this._inGame = true;
         this.ParentThread.Post(d => this.OnGameStart?.Invoke(this, EventArgs.Empty), null);
       } else {
         // check whether the game has been reset and if so, update our local state to reflect this
         // change
-        if (level == 0 || level == 101 || puppyCounter < this.PuppyCount) {
+        if (level == 0 || level == 101 || puppyCounter < this._pupCounter) {
           this.ResetValues();
 
           this.ParentThread.Post(d => this.OnGameReset?.Invoke(this, EventArgs.Empty), null);
-        } else if (puppyCounter > this.PuppyCount) {
+        } else if (puppyCounter > this._pupCounter) {
           this.ParentThread.Post(d => this.OnGameAdvance?.Invoke(this, EventArgs.Empty), null);
         }
       }
 
-      this.PuppyCount = puppyCounter;
-      this.PeopleCount = peopleCounter;
+      this._pupCounter = puppyCounter;
+      
+      this.ParentThread.Post(d => {
+        this.PupCount = puppyCounter;
+        this.ConversationCount = peopleCounter;
+      }, null);
     }
   }
 }
