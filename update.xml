@@ -1,0 +1,15 @@
+<?xml encoding="UTF-8" version="1.0"?>
+<updates>
+  <update version="1.0.0">
+    <files>
+      <file path="LiveSplit.dotStart.Common.dll" status="added" />
+      <file path="LiveSplit.dotStart.PetThePup.dll" status="added" />
+      <file path="LiveSplit.dotStart.PetThePup.UI.dll" status="added" />
+    </files>
+    <changelog>
+      <change>Initial plugin release</change>
+      <change>Added support for auto splitting</change>
+      <change>Added support for displaying game state information</change>
+    </changelog>
+  </update>
+</updates>
