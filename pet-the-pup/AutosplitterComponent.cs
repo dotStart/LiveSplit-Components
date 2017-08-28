@@ -18,8 +18,8 @@ namespace LiveSplit.dotStart.PetThePup {
 
     private readonly TimerModel _timer;
     private readonly LiveSplitState _state;
-    private readonly GameMemoryImpl _memory;
-    private readonly PuppyGallery _registry;
+    private readonly GameMemoryImpl _memory = GameMemoryImpl.Instance;
+    private readonly PuppyGallery _registry = new PuppyGallery();
 
     public AutosplitterComponent(LiveSplitState state) {
       this._state = state;
@@ -28,13 +28,11 @@ namespace LiveSplit.dotStart.PetThePup {
       this._timer = new TimerModel {CurrentState = state};
       this._timer.OnStart += this.OnTimerStart;
 
-      this._memory = new GameMemoryImpl();
       this._memory.OnGameStart += this.OnGameStart;
       this._memory.OnGameReset += this.OnGameReset;
       this._memory.OnProcessDied += this.OnGameCrash;
       this._memory.OnGameAdvance += this.OnAdvance;
       
-      this._registry = new PuppyGallery();
       this._registry.OnPuppyDiscovered += this.OnDiscoverPup;
       this._registry.OnAllPuppiesDiscovered += this.OnDiscoverAllPups;
 
@@ -147,8 +145,7 @@ namespace LiveSplit.dotStart.PetThePup {
 
     /// <inheritdoc />
     public override void Dispose() {
-      this._memory?.Stop();
-
+      this._memory.Dispose();
       this.Disposed = true;
     }
 

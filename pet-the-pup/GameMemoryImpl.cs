@@ -7,10 +7,30 @@ namespace LiveSplit.dotStart.PetThePup {
   /// <summary>
   /// Provides access to game state data and events for the Pet the Pup at the Party game.
   /// </summary>
-  public class GameMemoryImpl : GameMemory {
+  public class GameMemoryImpl : SharableGameMemory {
     public bool InGame { get; private set; }
     public uint PuppyCount { get; private set; }
     public uint PeopleCount { get; private set; }
+
+    /// <summary>
+    /// Grants access to an instance of this type.
+    /// 
+    /// This is used in order to allow sharing of the type between components (such as the UI and
+    /// auto splitter component).
+    /// </summary>
+    public static GameMemoryImpl Instance {
+      get {
+        GameMemoryImpl instance;
+
+        if (!_instance.TryGetTarget(out instance)) {
+          instance = new GameMemoryImpl();
+          _instance.SetTarget(instance);
+        }
+
+        instance.Claim();
+        return instance;
+      }
+    }
 
     public event EventHandler OnGameStart;
     public event EventHandler OnGameReset;
@@ -26,6 +46,14 @@ namespace LiveSplit.dotStart.PetThePup {
     protected override ReadOnlyCollection<string> ProcessNames => Array.AsReadOnly(new[] {
       "PetThePup"
     });
+
+    /// <summary>
+    /// Stores a weak reference to the game memory instance.
+    /// </summary>
+    private static readonly WeakReference<GameMemoryImpl> _instance = new WeakReference<GameMemoryImpl>(null);
+
+    private GameMemoryImpl() {
+    }
 
     /// <inheritdoc />
     protected override void ResetValues() {
