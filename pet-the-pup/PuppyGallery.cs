@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using Microsoft.Win32;
@@ -13,12 +14,26 @@ namespace LiveSplit.dotStart.PetThePup {
   /// this particular feature has to be specifically enabled.
   /// </summary>
   public class PuppyGallery {
+    public uint Discovered => (uint) this._discoveredPuppies.Count;
+    public Puppy Latest { get; private set; }
+    public ReadOnlyCollection<Puppy> Remaining => new ReadOnlyCollection<Puppy>(this._remainingPuppies);
+
     public event EventHandler<Puppy> OnPuppyDiscovered;
     public event EventHandler OnAllPuppiesDiscovered;
+
+    /// <summary>
+    /// Retrieves or creates a puppy gallery instance as needed.
+    /// </summary>
+    public static PuppyGallery Instance { get; private set; }
     
     private const string RegistryKey = @"Software\will herring\Pet The Pup at the Party";
-    
+
     private readonly List<Puppy> _discoveredPuppies = new List<Puppy>();
+    private readonly List<Puppy> _remainingPuppies = new List<Puppy>();
+
+    private PuppyGallery() {
+      Instance = this;
+    }
     
     /// <summary>
     /// Computes the name of a unity registry key.
@@ -35,6 +50,7 @@ namespace LiveSplit.dotStart.PetThePup {
     public void DeleteKeys() {
       // delete the entire known list of discovered puppies
       this._discoveredPuppies.Clear();
+      this._remainingPuppies.Clear();
 
       // delete the entire known list of puppies within the registry in order to force the game to
       // recreate the values and thus let us figure out which puppies were discovered during the
@@ -49,6 +65,7 @@ namespace LiveSplit.dotStart.PetThePup {
 
           foreach (Puppy puppy in Enum.GetValues(typeof(Puppy))) {
             Debug.Write("[Puppy Gallery] Deleting " + RegistryKey + "\\" + ComputeUnityKey(puppy.ToString()) + " ... ");
+            this._remainingPuppies.Add(puppy);
 
             // evaluate whether there is an actual value present for the puppy in question and if
             // not simply skip the action as it is already in the desired state
@@ -97,6 +114,9 @@ namespace LiveSplit.dotStart.PetThePup {
               Debug.WriteLine("[Puppy Gallery] Key " + RegistryKey + "\\" + ComputeUnityKey(puppy.ToString()) + " has changed");
 
               this._discoveredPuppies.Add(puppy);
+              this._remainingPuppies.Remove(puppy);
+              this.Latest = puppy;
+              
               this.OnPuppyDiscovered?.Invoke(this, puppy);
 
               // if we discovered all puppies, we'll also invoke the respective event to notify

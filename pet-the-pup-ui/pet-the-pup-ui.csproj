@@ -42,9 +42,13 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="UpdateManager, Version=0.1.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>D:\Program Files\LiveSplit\UpdateManager.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameStateComponent.cs" />
+    <Compile Include="GameStateFactory.cs" />
     <Compile Include="GameStateSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -57,6 +61,16 @@
     <EmbeddedResource Include="GameStateSettings.resx">
       <DependentUpon>GameStateSettings.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{bd3ff381-5ec2-471c-8a09-7cd40dd68eaa}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pet-the-pup\pet-the-pup.csproj">
+      <Project>{91f034e9-8717-4f86-b6a4-ebc2f33ffd04}</Project>
+      <Name>pet-the-pup</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

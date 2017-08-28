@@ -19,7 +19,7 @@ namespace LiveSplit.dotStart.PetThePup {
     private readonly TimerModel _timer;
     private readonly LiveSplitState _state;
     private readonly GameMemoryImpl _memory = GameMemoryImpl.Instance;
-    private readonly PuppyGallery _registry = new PuppyGallery();
+    private readonly PuppyGallery _registry = PuppyGallery.Instance;
 
     public AutosplitterComponent(LiveSplitState state) {
       this._state = state;
