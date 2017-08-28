@@ -17,7 +17,7 @@ namespace LiveSplit.dotStart.PetThePup {
     public string UpdateName => this.ComponentName;
     public string UpdateURL => "https://dl.dotstart.tv/livesplit/";
     public Version Version => Assembly.GetExecutingAssembly().GetName().Version;
-    public string XMLURL => "update.xml";
+    public string XMLURL => "pet-the-pup/update.xml";
 
     private AutosplitterComponent _instance;
     
