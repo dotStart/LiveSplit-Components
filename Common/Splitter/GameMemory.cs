@@ -79,9 +79,10 @@ namespace LiveSplit.dotStart.Common.Splitter {
       }
       
       // prepare the state and spawn a new thread
+      this.ParentThread = SynchronizationContext.Current;
+      
       this.ResetValues();
       
-      this.ParentThread = SynchronizationContext.Current;
       this._cancellationTokenSource = new CancellationTokenSource();
       this._thread = Task.Factory.StartNew(this.Update);
     }
