@@ -48,6 +48,11 @@ namespace LiveSplit.dotStart.PetThePup {
       // TODO: Right now we do not account for loading screens between the different levels and thus
       // we do not need to initialize game time on our timer model (for now)
       // this._timer.InitializeGameTime();
+      
+      if (this.Settings.AllowRegistryAccess) {
+        Debug.WriteLine("[Pet the Pup] Deleting registry keys");
+        this._registry.DeleteKeys();
+      }
     }
 
     /// <summary>
@@ -57,11 +62,6 @@ namespace LiveSplit.dotStart.PetThePup {
     /// <param name="e">a set of event arguments</param>
     private void OnGameStart(object sender, EventArgs e) {
       Debug.WriteLine("[Pet the Pup] Game is Starting");
-      
-      if (this.Settings.AllowRegistryAccess) {
-        Debug.WriteLine("[Pet the Pup] Deleting registry keys");
-        this._registry.DeleteKeys();
-      }
       
       if (this.Settings.AllowTimerReset) {
         this._timer.Reset();
@@ -79,10 +79,6 @@ namespace LiveSplit.dotStart.PetThePup {
     /// <param name="e">a set of event arguments</param>
     private void OnGameReset(object sender, EventArgs e) {
       Debug.WriteLine("[Pet the Pup] Game has been Reset");
-      
-      if (this.Settings.AllowTimerReset) {
-        this._timer.Reset();
-      }
     }
 
     /// <summary>
