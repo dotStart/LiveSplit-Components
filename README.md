@@ -1,5 +1,5 @@
-LiveSplit AutoSplitters
-=======================
+LiveSplit Components
+====================
 
 Table of Contents
 -----------------
@@ -9,12 +9,13 @@ Table of Contents
 * [License](#license)
 * [Downloads](#downloads)
 * [Issues](#issues)
+* [Building](#building)
 * [Contributing](#contributing)
 
 About
 -----
 
-This repository contains a random collection of LiveSplit auto splitters.
+This repository contains a random collection of LiveSplit components.
 
 Components
 ----------
@@ -25,7 +26,7 @@ Contacts
 --------
 
 * [IRC #.start on Esper](https://webchat.esper.net/?channels=%23%2Estart)
-* [GitHub](https://github.com/dotStart/livesplit-autosplitter)
+* [GitHub](https://github.com/LiveSplit-Components)
 
 Installation
 ------------
@@ -45,15 +46,15 @@ Copyright (C) 2016 Johannes "Akkarin" Donath and other copyright owners as docum
 Downloads
 ---------
 
-Released versions of the library can be found on [GitHub](https://github.com/dotStart/livesplit-autosplitter/releases).
+Released versions of the library can be found on [GitHub](https://github.com/LiveSplit-Components/releases).
 
 Issues
 ------
 
 You encountered problems with the library or have a suggestion? Create an issue!
 
-1. Make sure your issue has not been fixed in a newer version (check the list of [closed issues](https://github.com/dotStart/livesplit-autosplitter/issues?q=is%3Aissue+is%3Aclosed)
-1. Create [a new issue](https://github.com/dotStart/livesplit-autosplitter/issues/new) from the [issues page](https://github.com/dotStart/livesplit-autosplitter/issues)
+1. Make sure your issue has not been fixed in a newer version (check the list of [closed issues](https://github.com/LiveSplit-Components/issues?q=is%3Aissue+is%3Aclosed)
+1. Create [a new issue](https://github.com/LiveSplit-Components/issues/new) from the [issues page](https://github.com/LiveSplit-Components/issues)
 1. Enter your issue's title (something that summarizes your issue) and create a detailed description containing:
    - What is the expected result?
    - What problem occurs?
@@ -64,7 +65,7 @@ You encountered problems with the library or have a suggestion? Create an issue!
 Building
 --------
 
-1. Clone this repository via ```git clone https://github.com/dotStart/livesplit-autosplitter.git``` or download a [zip](https://github.com/dotStart/livesplit-autosplitter/archive/master.zip)
+1. Clone this repository via ```git clone https://github.com/LiveSplit-Components.git``` or download a [zip](https://github.com/LiveSplit-Components/archive/master.zip)
 1. Load the project in your favorite .NET IDE (We recommend jetBrains Rider)
 1. Build the entire project or desired modules
 

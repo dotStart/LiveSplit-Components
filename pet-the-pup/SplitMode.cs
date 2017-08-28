@@ -1,4 +1,4 @@
-﻿namespace LiveSplit.PetThePup {
+﻿namespace LiveSplit.dotStart.PetThePup {
   public enum SplitMode {
     Never,
     Every,

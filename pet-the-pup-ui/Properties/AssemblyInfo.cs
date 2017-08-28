@@ -1,14 +1,14 @@
 ﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using LiveSplit.dotStart.PetThePup;
+using LiveSplit.dotStart.PetThePup.UI;
 using LiveSplit.UI.Components;
 
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Pet the Pup Autosplitter")]
-[assembly: AssemblyDescription("Allows LiveSplit to automatically split or reset based on the game state.")]
+[assembly: AssemblyTitle("Pet the Pup UI")]
+[assembly: AssemblyDescription("Displays basic game state information within the LiveSplit UI.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("LiveSplit")]
@@ -22,7 +22,7 @@ using LiveSplit.UI.Components;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("91F034E9-8717-4F86-B6A4-EBC2F33FFD04")]
+[assembly: Guid("E52BAB1B-D88B-4962-8822-B008F05E5A86")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -38,4 +38,4 @@ using LiveSplit.UI.Components;
 [assembly: AssemblyFileVersion("1.0.0.0")]
 
 // LiveSplit
-[assembly: ComponentFactory(typeof(AutosplitterFactory))]
+[assembly: ComponentFactory(typeof(GameStateFactory))]

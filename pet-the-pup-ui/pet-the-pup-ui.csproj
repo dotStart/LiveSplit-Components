@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{91F034E9-8717-4F86-B6A4-EBC2F33FFD04}</ProjectGuid>
+    <ProjectGuid>{E52BAB1B-D88B-4962-8822-B008F05E5A86}</ProjectGuid>
     <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>LiveSplit.dotStart.PetThePup</RootNamespace>
-    <AssemblyName>LiveSplit.dotStart.PetThePup</AssemblyName>
+    <RootNamespace>LiveSplit.dotStart.PetThePup.UI</RootNamespace>
+    <AssemblyName>LiveSplit.dotStart.PetThePup.UI</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -47,29 +47,29 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Puppy.cs" />
-    <Compile Include="PuppyGallery.cs" />
-    <Compile Include="GameMemoryImpl.cs" />
-    <Compile Include="AutosplitterComponent.cs" />
-    <Compile Include="AutosplitterFactory.cs" />
-    <Compile Include="AutosplitterSettings.cs">
+    <Compile Include="GameStateComponent.cs" />
+    <Compile Include="GameStateFactory.cs" />
+    <Compile Include="GameStateSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="AutosplitterSettings.Designer.cs">
-      <DependentUpon>AutosplitterSettings.cs</DependentUpon>
+    <Compile Include="GameStateSettings.Designer.cs">
+      <DependentUpon>GameStateSettings.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SplitMode.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="AutosplitterSettings.resx">
-      <DependentUpon>AutosplitterSettings.cs</DependentUpon>
+    <EmbeddedResource Include="GameStateSettings.resx">
+      <DependentUpon>GameStateSettings.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{bd3ff381-5ec2-471c-8a09-7cd40dd68eaa}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pet-the-pup\pet-the-pup.csproj">
+      <Project>{91f034e9-8717-4f86-b6a4-ebc2f33ffd04}</Project>
+      <Name>pet-the-pup</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
