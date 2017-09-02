@@ -36,6 +36,7 @@ namespace LiveSplit.dotStart.PetThePup {
       this._memory.OnProcessDied += this.OnGameCrash;
       this._memory.OnGameAdvance += this.OnAdvance;
       
+      this._registry.Claim();
       this._registry.OnPuppyDiscovered += this.OnDiscoverPup;
       this._registry.OnAllPuppiesDiscovered += this.OnDiscoverAllPups;
 
@@ -80,6 +81,11 @@ namespace LiveSplit.dotStart.PetThePup {
       if (this.Settings.AllowTimerReset) {
         this._timer.Reset();
       }
+      
+      if (this.Settings.AllowRegistryAccess) {
+        this._registry.DeleteKeys();
+        this._registry.Start();
+      }
 
       if (this.Settings.AllowTimerStart) {
         this._timer.Start();
@@ -115,10 +121,6 @@ namespace LiveSplit.dotStart.PetThePup {
     /// <param name="e">a set of event arguments</param>
     /// <exception cref="ArgumentOutOfRangeException">when the current split mode is not (yet) supported</exception>
     private void OnAdvance(object sender, EventArgs e) {
-      if (this.Settings.AllowRegistryAccess) {
-        this._registry.Update();
-      }
-      
       if (this.Settings.Mode != SplitMode.Every) {
         return;
       }
@@ -168,7 +170,9 @@ namespace LiveSplit.dotStart.PetThePup {
       this._registry.OnPuppyDiscovered -= this.OnDiscoverPup;
       this._registry.OnAllPuppiesDiscovered -= this.OnDiscoverAllPups;
       
+      this._registry.Dispose();
       this._memory.Dispose();
+      
       this.Disposed = true;
     }
 
