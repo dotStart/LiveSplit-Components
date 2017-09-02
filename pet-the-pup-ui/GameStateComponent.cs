@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 using System.Xml;
 using LiveSplit.Model;
@@ -68,6 +69,19 @@ namespace LiveSplit.dotStart.PetThePup.UI {
           }
         }
 
+        if (this.Settings.DisplayPetStatistics) {
+          if (labels.Count != 0 || this.Settings.DisplayRemainingPups) {
+            height += Spacing;
+          }
+
+          height += this._petStatisticsLabel.Height;
+
+          foreach (SimpleLabel label in this._petCountLabels) {
+            height += Spacing;
+            height += label.Height;
+          }
+        }
+
         return height + this.PaddingTop + this.PaddingBottom;
       }
     }
@@ -87,15 +101,16 @@ namespace LiveSplit.dotStart.PetThePup.UI {
 
     private readonly GraphicsCache _cache = new GraphicsCache();
     private readonly SimpleLabel _totalPupsPetNameLabel = new SimpleLabel("Total Pups:");
-    private readonly SimpleLabel _totalPupsPetValueLabel = new SimpleLabel("0");
-    private readonly SimpleLabel _uniquePupsPetNameLabel = new SimpleLabel("Unique Pups discovered:");
+    private readonly SimpleLabel _totalPupsPetValueLabel = new SimpleLabel("0 (0)");
+    private readonly SimpleLabel _uniquePupsPetNameLabel = new SimpleLabel("Unique Pups Discovered:");
     private readonly SimpleLabel _uniquePupsPetValueLabel = new SimpleLabel("0");
     private readonly SimpleLabel _totalConversationsNameLabel = new SimpleLabel("Total Conversations:");
     private readonly SimpleLabel _totalConversationsValueLabel = new SimpleLabel("0");
     private readonly SimpleLabel _lastUniquePupNameLabel = new SimpleLabel("Last Pup:");
     private readonly SimpleLabel _lastUniquePupValueLabel = new SimpleLabel("-");
-    private readonly SimpleLabel _remainingPupNameLabel = new SimpleLabel("Remaining unique Pups:");
+    private readonly SimpleLabel _remainingPupNameLabel = new SimpleLabel("Remaining Unique Pups:");
     private readonly SimpleLabel _remainingPupValueLabel = new SimpleLabel("-");
+    private readonly SimpleLabel _petStatisticsLabel = new SimpleLabel("Pet Statistics:");
 
     /// <summary>
     /// Exposes a list of information labels visible within the component.
@@ -138,6 +153,7 @@ namespace LiveSplit.dotStart.PetThePup.UI {
 
     private bool _sizePopulated;
     private SimpleLabel[] _remainingPupLabels = new SimpleLabel[0];
+    private SimpleLabel[] _petCountLabels = new SimpleLabel[0];
 
     public GameStateComponent() {
       this.ContextMenuControls = new Dictionary<string, Action>();
@@ -167,6 +183,9 @@ namespace LiveSplit.dotStart.PetThePup.UI {
       this._remainingPupNameLabel.Height = 5;
       this._remainingPupValueLabel.Width = 5;
       this._remainingPupValueLabel.Height = 5;
+
+      this._petStatisticsLabel.Width = 5;
+      this._petStatisticsLabel.Height = 5;
       
       // claim the registry instance to be sure
       this._registry.Claim();
@@ -216,14 +235,33 @@ namespace LiveSplit.dotStart.PetThePup.UI {
         }
       }
 
-      if (mode == LayoutMode.Vertical && this.Settings.DisplayRemainingPups) {
-        foreach (SimpleLabel label in this._remainingPupLabels) {
-          UpdateLabelStyle(g, state, label);
+      if (mode == LayoutMode.Vertical) {
+        if (this.Settings.DisplayRemainingPups) {
+          foreach (SimpleLabel label in this._remainingPupLabels) {
+            UpdateLabelStyle(g, state, label);
 
-          label.X = this.PaddingLeft * 2;
-          label.Y = yOffset;
+            label.X = this.PaddingLeft * 2;
+            label.Y = yOffset;
 
-          yOffset += label.Height + Spacing;
+            yOffset += label.Height + Spacing;
+          }
+        }
+
+        if (this.Settings.DisplayPetStatistics) {
+          UpdateLabelStyle(g, state, this._petStatisticsLabel);
+          this._petStatisticsLabel.X = this.PaddingLeft;
+          this._petStatisticsLabel.Y = yOffset;
+
+          yOffset += this._petStatisticsLabel.Height + Spacing;
+
+          foreach (SimpleLabel label in this._petCountLabels) {
+            UpdateLabelStyle(g, state, label);
+
+            label.X = this.PaddingLeft * 2;
+            label.Y = yOffset;
+
+            yOffset += label.Height + Spacing;
+          }
         }
       }
 
@@ -260,9 +298,19 @@ namespace LiveSplit.dotStart.PetThePup.UI {
         label.Draw(g);
       }
 
-      if (mode == LayoutMode.Vertical && this.Settings.DisplayRemainingPups) {
-        foreach (SimpleLabel label in this._remainingPupLabels) {
-          label.Draw(g);
+      if (mode == LayoutMode.Vertical) {
+        if (this.Settings.DisplayRemainingPups) {
+          foreach (SimpleLabel label in this._remainingPupLabels) {
+            label.Draw(g);
+          }
+        }
+
+        if (this.Settings.DisplayPetStatistics) {
+          this._petStatisticsLabel.Draw(g);
+
+          foreach (SimpleLabel label in this._petCountLabels) {
+            label.Draw(g);
+          }
         }
       }
     }
@@ -300,67 +348,81 @@ namespace LiveSplit.dotStart.PetThePup.UI {
       this.Settings.SetSettings(settings);
     }
 
+    private void ResizeArray<T>(uint target, ref T[] array, Func<T> initializer) {
+      if (array.Length == target) {
+        return;
+      }
+      
+      T[] newArray = new T[target];
+
+      if (target != 0) {
+        Array.Copy(array, 0, array, 0, Math.Min(array.Length, target));
+      }
+
+      if (target > array.Length) {
+        for (int i = array.Length; i < target; ++i) {
+          newArray[i] = initializer();
+        }
+      }
+
+      array = newArray;
+    }
+
     /// <inheritdoc />
     public void Update(IInvalidator invalidator, LiveSplitState state, float width, float height,
       LayoutMode mode) {
       // re-initialize list of remaining pups if necessary
-      if (this._remainingPupLabels.Length != this.Settings.RemainingPupAmount) {
-        // copy all valid elements into our local array to preserve them (toss all labels that
-        // exceed the new size (if we are reducing it)
-        SimpleLabel[] labels = new SimpleLabel[this.Settings.RemainingPupAmount];
+      this.ResizeArray(this.Settings.RemainingPupAmount, ref this._remainingPupLabels,
+        () => new SimpleLabel("-") {
+          Width = 5,
+          Height = 5
+        });
 
-        if (this._remainingPupLabels.Length != 0) {
-          Array.Copy(this._remainingPupLabels, 0, labels, 0,
-            Math.Min(this._remainingPupLabels.Length, labels.Length));
-        }
-
-        // initialize any new elements that were added to the array with empty labels that we'll
-        // add to later on within the update logic
-        if (this._remainingPupLabels.Length < labels.Length) {
-          for (int i = this._remainingPupLabels.Length; i < labels.Length; ++i) {
-            labels[i] = new SimpleLabel("-") {
-              Width = 5,
-              Height = 5
-            };
-          }
-        }
-
-        // reassign the component local variable with the newly sized array
-        this._remainingPupLabels = labels;
-      }
+      this.ResizeArray(this.Settings.PetStatisticsAmount, ref this._petCountLabels,
+        () => new SimpleLabel("-") {
+          Width = 5,
+          Height = 5
+        });
       
       // reset all values within our graphics cache in order to verify whether we need to re-draw
       // the entire component (e.g. when values change)
       this._cache.Restart();
 
-      this._cache["TotalPupsPet"] = this._memory.PupCount;
+      this._cache["TotalPupsPet"] = this._memory.TotalPupCount;
+      this._cache["SessionPupsPet"] = this._memory.PupCount;
       this._cache["UniquePupsPet"] = this._registry.Discovered;
       this._cache["TotalConversations"] = this._memory.ConversationCount;
       this._cache["LastUniquePup"] = this._registry.Discovered != 0 ? this._registry.Latest.ToString() : "-";
       
-      Puppy[] remaining = new Puppy[this._remainingPupLabels.Length];
       ReadOnlyCollection<Puppy> knownRemaining = this._registry.Remaining;
-
-      for (int i = 0; i < remaining.Length; ++i) {
-        if (i >= knownRemaining.Count) {
-          break;
-        }
-        
-        remaining[i] = knownRemaining[i];
-      }
+      ReadOnlyDictionary<Puppy, uint> statistics = this._registry.PetCount;
 
       this._cache["RemainingPupCount"] = knownRemaining.Count;
-      this._cache["RemainingPups"] = remaining;
+      this._cache["RemainingPups"] = knownRemaining;
+      this._cache["PetStatisticsCount"] = statistics;
 
       if (invalidator != null && this._cache.HasChanged) {
-        this._totalPupsPetValueLabel.Text = this._memory.PupCount.ToString();
+        this._totalPupsPetValueLabel.Text = this._memory.TotalPupCount + " (" + this._memory.PupCount + ")";
         this._uniquePupsPetValueLabel.Text = this._registry.Discovered.ToString();
         this._totalConversationsValueLabel.Text = this._memory.ConversationCount.ToString();
         this._lastUniquePupValueLabel.Text = this._registry.Discovered != 0 ? this._registry.Latest.ToString() : "-";
         this._remainingPupValueLabel.Text = knownRemaining.Count.ToString();
 
         for (int i = 0; i < this._remainingPupLabels.Length; ++i) {
-          this._remainingPupLabels[i].Text = i < knownRemaining.Count ? "- " + remaining[i] : "-";
+          this._remainingPupLabels[i].Text =
+            i < knownRemaining.Count ? "- " + knownRemaining[i] : "-";
+        }
+
+        List<KeyValuePair<Puppy, uint>> statisticEntries = statistics.ToList();
+        statisticEntries.Sort((a, b) => -1 * a.Value.CompareTo(b.Value));
+
+        for (int i = 0; i < this._petCountLabels.Length; ++i) {
+          if (i >= statisticEntries.Count) {
+            this._petCountLabels[i].Text = "-";
+            continue;
+          }
+          
+          this._petCountLabels[i].Text = statisticEntries[i].Key + ": " + statisticEntries[i].Value;
         }
         
         invalidator.Invalidate(0, 0, width, height);

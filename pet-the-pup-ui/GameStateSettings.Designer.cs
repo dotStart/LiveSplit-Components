@@ -37,9 +37,15 @@
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this._numRemainingPups = new System.Windows.Forms.NumericUpDown();
+            this._chkDisplayPetStatistics = new System.Windows.Forms.CheckBox();
+            this.flowLayoutPanel3 = new System.Windows.Forms.FlowLayoutPanel();
+            this.label2 = new System.Windows.Forms.Label();
+            this._numPetStatistics = new System.Windows.Forms.NumericUpDown();
             this.flowLayoutPanel1.SuspendLayout();
             this.flowLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this._numRemainingPups)).BeginInit();
+            this.flowLayoutPanel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._numPetStatistics)).BeginInit();
             this.SuspendLayout();
             // 
             // flowLayoutPanel1
@@ -52,13 +58,15 @@
             this.flowLayoutPanel1.Controls.Add(this._chkDisplayLastDiscoveredPup);
             this.flowLayoutPanel1.Controls.Add(this._chkDisplayRemainingPups);
             this.flowLayoutPanel1.Controls.Add(this.flowLayoutPanel2);
+            this.flowLayoutPanel1.Controls.Add(this._chkDisplayPetStatistics);
+            this.flowLayoutPanel1.Controls.Add(this.flowLayoutPanel3);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(5);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
             this.flowLayoutPanel1.Padding = new System.Windows.Forms.Padding(5);
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(325, 157);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(335, 212);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // _chkDisplayTotalPups
@@ -135,11 +143,6 @@
             // _numRemainingPups
             // 
             this._numRemainingPups.Location = new System.Drawing.Point(186, 3);
-            this._numRemainingPups.Minimum = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
             this._numRemainingPups.Name = "_numRemainingPups";
             this._numRemainingPups.Size = new System.Drawing.Size(120, 20);
             this._numRemainingPups.TabIndex = 5;
@@ -149,6 +152,44 @@
             0,
             0});
             // 
+            // _chkDisplayPetStatistics
+            // 
+            this._chkDisplayPetStatistics.AutoSize = true;
+            this._chkDisplayPetStatistics.Location = new System.Drawing.Point(8, 155);
+            this._chkDisplayPetStatistics.Name = "_chkDisplayPetStatistics";
+            this._chkDisplayPetStatistics.Size = new System.Drawing.Size(121, 17);
+            this._chkDisplayPetStatistics.TabIndex = 7;
+            this._chkDisplayPetStatistics.Text = "Display pet statistics";
+            this._chkDisplayPetStatistics.UseVisualStyleBackColor = true;
+            // 
+            // flowLayoutPanel3
+            // 
+            this.flowLayoutPanel3.AutoSize = true;
+            this.flowLayoutPanel3.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.flowLayoutPanel3.Controls.Add(this.label2);
+            this.flowLayoutPanel3.Controls.Add(this._numPetStatistics);
+            this.flowLayoutPanel3.Location = new System.Drawing.Point(8, 178);
+            this.flowLayoutPanel3.Name = "flowLayoutPanel3";
+            this.flowLayoutPanel3.Size = new System.Drawing.Size(319, 26);
+            this.flowLayoutPanel3.TabIndex = 8;
+            // 
+            // label2
+            // 
+            this.label2.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 6);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(187, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Amount of Pups to display statistics on";
+            // 
+            // _numPetStatistics
+            // 
+            this._numPetStatistics.Location = new System.Drawing.Point(196, 3);
+            this._numPetStatistics.Name = "_numPetStatistics";
+            this._numPetStatistics.Size = new System.Drawing.Size(120, 20);
+            this._numPetStatistics.TabIndex = 1;
+            // 
             // GameStateSettings
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -157,12 +198,15 @@
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Controls.Add(this.flowLayoutPanel1);
             this.Name = "GameStateSettings";
-            this.Size = new System.Drawing.Size(325, 157);
+            this.Size = new System.Drawing.Size(335, 212);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.flowLayoutPanel1.PerformLayout();
             this.flowLayoutPanel2.ResumeLayout(false);
             this.flowLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this._numRemainingPups)).EndInit();
+            this.flowLayoutPanel3.ResumeLayout(false);
+            this.flowLayoutPanel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this._numPetStatistics)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -179,5 +223,9 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.NumericUpDown _numRemainingPups;
+        private System.Windows.Forms.CheckBox _chkDisplayPetStatistics;
+        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.NumericUpDown _numPetStatistics;
     }
 }

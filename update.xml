@@ -1,5 +1,15 @@
 <?xml encoding="UTF-8" version="1.0"?>
 <updates>
+  <update version="1.1.0">
+    <files>
+      <file path="LiveSplit.dotStart.PetThePup.dll" status="changed" />
+      <file path="LiveSplit.dotStart.PetThePup.UI.dll" status="changed" />
+    </files>
+    <changelog>
+      <change>Added support for displaying the amount of times a certain pup was pet</change>
+      <change>Added support for displaying the amount of pups pet during a single run</change>
+    </changelog>
+  </update>
   <update version="1.0.1">
     <files>
       <file path="LiveSplit.dotStart.Common.dll" status="changed" />
