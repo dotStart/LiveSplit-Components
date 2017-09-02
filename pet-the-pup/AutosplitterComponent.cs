@@ -82,6 +82,7 @@ namespace LiveSplit.dotStart.PetThePup {
       Debug.WriteLine("[Pet the Pup] Timer has been reset");
       
       this._registry.Reset();
+      this._memory.Reset();
     }
 
     /// <summary>

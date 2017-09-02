@@ -10,6 +10,7 @@ namespace LiveSplit.dotStart.PetThePup {
   public class GameMemoryImpl : SharableGameMemory {
     
     public uint PupCount { get; private set; }
+    public uint TotalPupCount => this.PupCount + this._pupCounterOffset;
     public uint ConversationCount { get; private set; }
 
     /// <summary>
@@ -59,11 +60,23 @@ namespace LiveSplit.dotStart.PetThePup {
     private uint _pupCounter;
 
     /// <summary>
+    /// Stores the offset which has been accumulated in a previous game session.
+    /// </summary>
+    private uint _pupCounterOffset;
+
+    /// <summary>
     /// Stores a weak reference to the game memory instance.
     /// </summary>
     private static readonly WeakReference<GameMemoryImpl> _instance = new WeakReference<GameMemoryImpl>(null);
 
     private GameMemoryImpl() {
+    }
+
+    /// <summary>
+    /// Resets the total pup value.
+    /// </summary>
+    public void Reset() {
+      this._pupCounterOffset = 0;
     }
 
     /// <inheritdoc />
@@ -100,6 +113,7 @@ namespace LiveSplit.dotStart.PetThePup {
         // check whether the game has been reset and if so, update our local state to reflect this
         // change
         if (level == 0 || level == 101 || puppyCounter < this._pupCounter) {
+          this.ParentThread.Post(d => this._pupCounterOffset = this.TotalPupCount, null);
           this.ResetValues();
 
           this.ParentThread.Post(d => this.OnGameReset?.Invoke(this, EventArgs.Empty), null);

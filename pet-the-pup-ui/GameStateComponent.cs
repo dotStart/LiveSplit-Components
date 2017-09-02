@@ -101,7 +101,7 @@ namespace LiveSplit.dotStart.PetThePup.UI {
 
     private readonly GraphicsCache _cache = new GraphicsCache();
     private readonly SimpleLabel _totalPupsPetNameLabel = new SimpleLabel("Total Pups:");
-    private readonly SimpleLabel _totalPupsPetValueLabel = new SimpleLabel("0");
+    private readonly SimpleLabel _totalPupsPetValueLabel = new SimpleLabel("0 (0)");
     private readonly SimpleLabel _uniquePupsPetNameLabel = new SimpleLabel("Unique Pups Discovered:");
     private readonly SimpleLabel _uniquePupsPetValueLabel = new SimpleLabel("0");
     private readonly SimpleLabel _totalConversationsNameLabel = new SimpleLabel("Total Conversations:");
@@ -388,7 +388,8 @@ namespace LiveSplit.dotStart.PetThePup.UI {
       // the entire component (e.g. when values change)
       this._cache.Restart();
 
-      this._cache["TotalPupsPet"] = this._memory.PupCount;
+      this._cache["TotalPupsPet"] = this._memory.TotalPupCount;
+      this._cache["SessionPupsPet"] = this._memory.PupCount;
       this._cache["UniquePupsPet"] = this._registry.Discovered;
       this._cache["TotalConversations"] = this._memory.ConversationCount;
       this._cache["LastUniquePup"] = this._registry.Discovered != 0 ? this._registry.Latest.ToString() : "-";
@@ -401,7 +402,7 @@ namespace LiveSplit.dotStart.PetThePup.UI {
       this._cache["PetStatisticsCount"] = statistics;
 
       if (invalidator != null && this._cache.HasChanged) {
-        this._totalPupsPetValueLabel.Text = this._memory.PupCount.ToString();
+        this._totalPupsPetValueLabel.Text = this._memory.TotalPupCount + " (" + this._memory.PupCount + ")";
         this._uniquePupsPetValueLabel.Text = this._registry.Discovered.ToString();
         this._totalConversationsValueLabel.Text = this._memory.ConversationCount.ToString();
         this._lastUniquePupValueLabel.Text = this._registry.Discovered != 0 ? this._registry.Latest.ToString() : "-";
