@@ -168,6 +168,9 @@ namespace LiveSplit.dotStart.PetThePup.UI {
       this._remainingPupValueLabel.Width = 5;
       this._remainingPupValueLabel.Height = 5;
       
+      // claim the registry instance to be sure
+      this._registry.Claim();
+      
       // start memory checking (if not already running)
       this._memory.Start();
     }
@@ -266,6 +269,7 @@ namespace LiveSplit.dotStart.PetThePup.UI {
     
     /// <inheritdoc />
     public void Dispose() {
+      this._registry.Dispose();
       this._memory.Dispose();
     }
 
