@@ -27,8 +27,15 @@ namespace LiveSplit.dotStart.PetThePup.UI {
         this._numRemainingPups.Enabled = value;
       }
     }
-
     public uint RemainingPupAmount { get; set; }
+    public bool DisplayPetStatistics {
+      get => this._displayPetStatistics;
+      set {
+        this._displayPetStatistics = value;
+        this._numPetStatistics.Enabled = value;
+      }
+    }
+    public uint PetStatisticsAmount { get; set; }
 
     private const bool DefaultDisplayTotalPups = false;
     private const bool DefaultDisplayUniquePups = true;
@@ -36,8 +43,11 @@ namespace LiveSplit.dotStart.PetThePup.UI {
     private const bool DefaultDisplayLastDiscoveredPup = true;
     private const bool DefaultDisplayRemainingPups = true;
     private const uint DefaultRemainingPupAmount = 5;
+    private const bool DefaultDisplayPetStatistics = false;
+    private const uint DefaultPetStatisticsAmount = 3;
 
     private bool _displayRemainingPups;
+    private bool _displayPetStatistics;
     
     public GameStateSettings() {
       this.InitializeComponent();
@@ -54,6 +64,10 @@ namespace LiveSplit.dotStart.PetThePup.UI {
         DataSourceUpdateMode.OnPropertyChanged);
       this._numRemainingPups.DataBindings.Add("Value", this, "RemainingPupAmount", false,
         DataSourceUpdateMode.OnPropertyChanged);
+      this._chkDisplayPetStatistics.DataBindings.Add("Checked", this, "DisplayPetStatistics", false,
+        DataSourceUpdateMode.OnPropertyChanged);
+      this._numPetStatistics.DataBindings.Add("Value", this, "PetStatisticsAmount", false,
+        DataSourceUpdateMode.OnPropertyChanged);
 
       this._numRemainingPups.Maximum = Enum.GetValues(typeof(Puppy)).Length;
 
@@ -63,6 +77,8 @@ namespace LiveSplit.dotStart.PetThePup.UI {
       this.DisplayLastDiscoveredPup = DefaultDisplayLastDiscoveredPup;
       this.DisplayRemainingPups = DefaultDisplayRemainingPups;
       this.RemainingPupAmount = DefaultRemainingPupAmount;
+      this.DisplayPetStatistics = DefaultDisplayPetStatistics;
+      this.PetStatisticsAmount = DefaultPetStatisticsAmount;
     }
 
     /// <inheritdoc />
@@ -74,6 +90,8 @@ namespace LiveSplit.dotStart.PetThePup.UI {
         this.DisplayLastDiscoveredPup));
       root.AppendChild(WriteElement(document, "DisplayRemainingPups", this.DisplayRemainingPups));
       root.AppendChild(WriteElement(document, "RemainingPupAmount", this.RemainingPupAmount));
+      root.AppendChild(WriteElement(document, "DisplayPetStatistics", this.DisplayPetStatistics));
+      root.AppendChild(WriteElement(document, "PetStatisticsAmount", this.PetStatisticsAmount));
     }
 
     /// <inheritdoc />
@@ -88,8 +106,13 @@ namespace LiveSplit.dotStart.PetThePup.UI {
         ReadElement(settings, "DisplayRemainingPups", DefaultDisplayRemainingPups);
       this.RemainingPupAmount =
         ReadElement(settings, "RemainingPupAmount", DefaultRemainingPupAmount);
+      this.DisplayPetStatistics =
+        ReadElement(settings, "DisplayPetStatistics", DefaultDisplayPetStatistics);
+      this.PetStatisticsAmount =
+        ReadElement(settings, "PetStatisticsAmount", DefaultPetStatisticsAmount);
       
       this._numRemainingPups.Enabled = this.DisplayRemainingPups;
+      this._numPetStatistics.Enabled = this.DisplayPetStatistics;
     }
   }
 }

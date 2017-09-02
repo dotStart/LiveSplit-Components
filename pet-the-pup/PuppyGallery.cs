@@ -20,6 +20,7 @@ namespace LiveSplit.dotStart.PetThePup {
     public uint Discovered { get; private set; }
     public Puppy Latest { get; private set; }
     public ReadOnlyCollection<Puppy> Remaining { get; private set; }
+    public ReadOnlyDictionary<Puppy, uint> PetCount { get; private set; }
 
     public event EventHandler<Puppy> OnPuppyDiscovered;
     public event EventHandler OnAllPuppiesDiscovered;
@@ -47,11 +48,14 @@ namespace LiveSplit.dotStart.PetThePup {
     private CancellationTokenSource _cancellationTokenSource;
     private readonly object _stateLock = new object();
 
+    private Puppy _latest;
     private readonly List<Puppy> _discoveredPuppies = new List<Puppy>();
     private readonly List<Puppy> _remainingPuppies = new List<Puppy>();
+    private readonly Dictionary<Puppy, uint> _petCount = new Dictionary<Puppy, uint>();
 
     private PuppyGallery() {
       this.Remaining = new ReadOnlyCollection<Puppy>(new List<Puppy>());
+      this.PetCount = new ReadOnlyDictionary<Puppy, uint>(new Dictionary<Puppy, uint>());
     }
 
     /// <summary>
@@ -83,6 +87,15 @@ namespace LiveSplit.dotStart.PetThePup {
       
       this._cancellationTokenSource.Cancel();
       this._task.Wait();
+    }
+
+    public void Reset() {
+      lock (this._stateLock) {
+        Debug.WriteLine("[Pup Gallery] Resetting Statistics");
+
+        this._petCount.Clear();
+        this.RefreshPublicValues();
+      }
     }
 
     /// <summary>
@@ -134,6 +147,28 @@ namespace LiveSplit.dotStart.PetThePup {
       }
     }
 
+    private void RefreshPublicValues() {
+      if (this._synchronizationContext == null) {
+        this.DoRefreshPublicValues();
+        return;
+      }
+      
+      this._synchronizationContext.Post(d => this.DoRefreshPublicValues(), false);
+    }
+
+    private void DoRefreshPublicValues() {
+      uint discovered = (uint) this._discoveredPuppies.Count;
+      Puppy puppy = this._latest;
+      ReadOnlyCollection<Puppy> remaining =
+        new ReadOnlyCollection<Puppy>(new List<Puppy>(this._remainingPuppies));
+      Dictionary<Puppy, uint> petCount = new Dictionary<Puppy, uint>(this._petCount);
+      
+      this.Discovered = discovered;
+      this.Latest = puppy;
+      this.Remaining = remaining;
+      this.PetCount = new ReadOnlyDictionary<Puppy, uint>(petCount);
+    }
+
     /// <summary>
     /// Updates the amount and set of discovered doggos.
     /// </summary>
@@ -142,7 +177,7 @@ namespace LiveSplit.dotStart.PetThePup {
       
       while (!this._cancellationTokenSource.IsCancellationRequested) {
         lock (this._stateLock) {
-          using (RegistryKey key = Registry.CurrentUser.OpenSubKey(RegistryKey, false)) {
+          using (RegistryKey key = Registry.CurrentUser.OpenSubKey(RegistryKey, true)) {
             // the key itself is not defined (e.g. the game has yedt to be executed)
             if (key == null) {
               return;
@@ -150,12 +185,6 @@ namespace LiveSplit.dotStart.PetThePup {
 
             try {
               foreach (Puppy puppy in Enum.GetValues(typeof(Puppy))) {
-                // since this process is pretty terrible and slow we'll omit all puppies that we know
-                // have already been discovered within this session
-                if (this._discoveredPuppies.Contains(puppy)) {
-                  continue;
-                }
-
                 // retrieve the key value in order to figure out whether the key has been populated by
                 // the game as a result of the discovery and if so push it to the list of known values
                 object keyValue = key.GetValue(ComputeUnityKey(puppy.ToString()));
@@ -164,35 +193,42 @@ namespace LiveSplit.dotStart.PetThePup {
                   continue;
                 }
                 
-                Debug.WriteLine("[Puppy Gallery] Key " + RegistryKey + "\\" +
-                                ComputeUnityKey(puppy.ToString()) + " has changed");
+                // if we are dealing with a puppy that has already been discovered within this run,
+                // we'll simply update the pet counter and move on
+                if (this._discoveredPuppies.Contains(puppy)) {
+                  ++this._petCount[puppy];
 
-                this._discoveredPuppies.Add(puppy);
-                this._remainingPuppies.Remove(puppy);
+                  this.RefreshPublicValues();
+                } else {
+                  // otherwise create the structure and remove the puppy from our list
+                  Debug.WriteLine("[Puppy Gallery] Key " + RegistryKey + "\\" +
+                                  ComputeUnityKey(puppy.ToString()) + " has changed");
 
-                uint discovered = (uint) this._discoveredPuppies.Count;
-                ReadOnlyCollection<Puppy> remaining =
-                  new ReadOnlyCollection<Puppy>(new List<Puppy>(this._remainingPuppies));
+                  this._latest = puppy;
+                  this._discoveredPuppies.Add(puppy);
+                  this._remainingPuppies.Remove(puppy);
+                  this._petCount[puppy] = 1;
 
-                this._synchronizationContext.Post(d => {
-                  this.Discovered = discovered;
-                  this.Latest = puppy;
-                  this.Remaining = remaining;
+                  this.RefreshPublicValues();
 
-                  this.OnPuppyDiscovered?.Invoke(this, puppy);
-                }, false);
+                  this._synchronizationContext.Post(d => {
+                    this.OnPuppyDiscovered?.Invoke(this, puppy);
+                  }, false);
 
-                // if we discovered all puppies, we'll also invoke the respective event to notify
-                // whatever component is listening in
-                if (this._discoveredPuppies.Count == Enum.GetValues(typeof(Puppy)).Length) {
-                  this._synchronizationContext.Post(
-                    d => this.OnAllPuppiesDiscovered?.Invoke(this, EventArgs.Empty), false);
+                  // if we discovered all puppies, we'll also invoke the respective event to notify
+                  // whatever component is listening in
+                  if (this._discoveredPuppies.Count == Enum.GetValues(typeof(Puppy)).Length) {
+                    this._synchronizationContext.Post(
+                      d => this.OnAllPuppiesDiscovered?.Invoke(this, EventArgs.Empty), false);
+                  }
                 }
+                
+                key.DeleteValue(ComputeUnityKey(puppy.ToString()));
               }
             } catch (Exception ex) {
               // simply report any problems we discover to the developer console as we do not wish to
               // bother the user if anything goes wrong
-              Debug.Write("Failed to access registry: " + ex.Message);
+              Debug.WriteLine("Failed to access registry: " + ex.Message);
             }
           }
 

@@ -27,6 +27,8 @@ namespace LiveSplit.dotStart.PetThePup {
       this._state = state;
       this.Settings = new AutosplitterSettings();
 
+      this._state.OnReset += this.OnTimerReset;
+      
       this._timer = new TimerModel {CurrentState = state};
       this._timer.OnStart += this.OnTimerStart;
       this._timer.OnPause += this.OnTimerPause;
@@ -58,6 +60,7 @@ namespace LiveSplit.dotStart.PetThePup {
       if (this.Settings.AllowRegistryAccess) {
         Debug.WriteLine("[Pet the Pup] Deleting registry keys");
         this._registry.DeleteKeys();
+        this._registry.Start();
       }
     }
 
@@ -71,6 +74,17 @@ namespace LiveSplit.dotStart.PetThePup {
     }
 
     /// <summary>
+    /// Handles timer resets.
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="phase"></param>
+    private void OnTimerReset(object sender, TimerPhase phase) {
+      Debug.WriteLine("[Pet the Pup] Timer has been reset");
+      
+      this._registry.Reset();
+    }
+
+    /// <summary>
     /// Handles the game startup.
     /// </summary>
     /// <param name="sender">a sender</param>
@@ -80,11 +94,6 @@ namespace LiveSplit.dotStart.PetThePup {
       
       if (this.Settings.AllowTimerReset) {
         this._timer.Reset();
-      }
-      
-      if (this.Settings.AllowRegistryAccess) {
-        this._registry.DeleteKeys();
-        this._registry.Start();
       }
 
       if (this.Settings.AllowTimerStart) {
@@ -160,8 +169,11 @@ namespace LiveSplit.dotStart.PetThePup {
 
     /// <inheritdoc />
     public override void Dispose() {
+      this._state.OnReset -= this.OnTimerReset;
+      
       this._timer.OnStart -= this.OnTimerStart;
-
+      this._timer.OnPause -= this.OnTimerPause;
+      
       this._memory.OnGameStart -= this.OnGameStart;
       this._memory.OnGameReset -= this.OnGameReset;
       this._memory.OnProcessDied -= this.OnGameCrash;
